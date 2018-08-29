@@ -21,13 +21,13 @@ class spider(object):
         return page_group
 #geteveryclass用来抓取每个课程块的信息
     def geteveryclass(self,source):
-        everyclass = re.findall('(<li deg="".*?</li>)',source,re.S)
+        everyclass = re.findall('<li id="\d+" test="0" deg="0"(.*?)</li>',source,re.S)
         return everyclass
 #getinfo用来从每个课程块中提取出我们需要的信息
     def getinfo(self,eachclass):
         info = {}
-        info['title'] = re.search('target="_blank">(.*?)</a>',eachclass,re.S).group(1)
-        info['content'] = re.search('</h2><p>(.*?)</p>',eachclass,re.S).group(1)
+        info['title'] = re.search('title="(.*?)" alt="',eachclass,re.S).group(1)
+        info['content'] = re.search('</h2><p style="height: 0px; opacity: 0; display: none;">(.*?)</p>',eachclass,re.S).group(1)
         timeandlevel = re.findall('<em>(.*?)</em>',eachclass,re.S)
         info['classtime'] = timeandlevel[0]
         info['classlevel'] = timeandlevel[1]
@@ -49,7 +49,7 @@ if __name__ == '__main__':
     classinfo = []
     url = 'http://www.jikexueyuan.com/course/?pageNum=1'
     jikespider = spider()
-    all_links = jikespider.changepage(url,20)
+    all_links = jikespider.changepage(url,2)
     for link in all_links:
         print (u'正在处理页面：' + link)
         html = jikespider.getsource(link)
