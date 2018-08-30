@@ -27,29 +27,27 @@ class spider(object):
     def getinfo(self,eachclass):
         info = {}
         info['title'] = re.search('title="(.*?)" alt="',eachclass,re.S).group(1)
-        info['content'] = re.search('</h2><p style="height: 0px; opacity: 0; display: none;">(.*?)</p>',eachclass,re.S).group(1)
-        timeandlevel = re.findall('<em>(.*?)</em>',eachclass,re.S)
-        info['classtime'] = timeandlevel[0]
-        info['classlevel'] = timeandlevel[1]
+        info['content'] = re.search('<p style="height: 0px; opacity: 0; display: none;">\s*(.*?)\s*</p>',eachclass,re.S).group(1)
+        info['classtime'] = re.findall('<i class="time-icon"></i><em>(.*?)\n\s*(.*?)</em>', eachclass, re.S)
+        info['classlevel'] = re.findall('<i class="xinhao-icon\d*"></i><em>(.*?)</em>', eachclass, re.S)
         info['learnnum'] = re.search('"learn-number">(.*?)</em>',eachclass,re.S).group(1)
         return info
 #saveinfo用来保存结果到info.txt文件中
     def saveinfo(self,classinfo):
-        f = open('info.txt','a')
-        for each in classinfo:
-            f.writelines('title:' + each['title'] + '\n')
-            f.writelines('content:' + each['content'] + '\n')
-            f.writelines('classtime:' + each['classtime'] + '\n')
-            f.writelines('classlevel:' + each['classlevel'] + '\n')
-            f.writelines('learnnum:' + each['learnnum'] +'\n\n')
-        f.close()
+        with open('info.txt','w', encoding='utf8') as f:
+            for each in classinfo:
+                f.writelines('title:' + each['title'] + '\n')
+                f.writelines('content:' + each['content'] + '\n')
+                f.writelines('classtime:' + str(each['classtime']) + '\n')
+                f.writelines('classlevel:' + str(each['classlevel']) + '\n')
+                f.writelines('learnnum:' + each['learnnum'] +'\n\n')
 
 if __name__ == '__main__':
 
     classinfo = []
     url = 'http://www.jikexueyuan.com/course/?pageNum=1'
     jikespider = spider()
-    all_links = jikespider.changepage(url,2)
+    all_links = jikespider.changepage(url,1)
     for link in all_links:
         print (u'正在处理页面：' + link)
         html = jikespider.getsource(link)
