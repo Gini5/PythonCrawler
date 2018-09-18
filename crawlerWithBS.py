@@ -7,9 +7,9 @@ def craw(max_page):
         url = "http://www.jikexueyuan.com/course/?pageNum=" + str(page)
         plainText = requests.get(url).text
         soup = BeautifulSoup(plainText)
-        for img in soup.findAll('img',{'class': 'lessonimg'}):
-            title = img.get('title')
-            print(title)
+        for link in soup.findAll('a',{'target': '_blank', 'jktag': ''}):
+            courseLink = link.get('href')
+            print(courseLink)
         page += 1
 
 if __name__ == "__main__":
